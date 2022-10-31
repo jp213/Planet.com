@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">WelcomeScreen</string>
+
+    <string name="welcome_screen">Welcome to Planet.com!</string>
+</resources>
