@@ -113,25 +113,6 @@ class RegisterUser : AppCompatActivity(), View.OnClickListener {
                         progressBar.visibility = View.GONE
                     }
                 }
-                /*FirebaseAuth.getInstance().currentUser?.let {
-                    FirebaseDatabase.getInstance().getReference("Users").child(
-                        it.uid
-                    ).setValue(user).addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Toast.makeText(
-                                this, "User has been registered!",
-                                Toast.LENGTH_LONG
-                            ).show()
-                            progressBar.visibility = View.GONE
-                        } else {
-                            Toast.makeText(
-                                this, "Failed to register! Please Try Again",
-                                Toast.LENGTH_LONG
-                            ).show()
-                            progressBar.visibility = View.GONE
-                        }
-                    }
-                }*/
             }
             else {
                 Toast.makeText(this, "Failed to register! Please Try Again",
@@ -142,5 +123,4 @@ class RegisterUser : AppCompatActivity(), View.OnClickListener {
         }
 
     }
-
 }
