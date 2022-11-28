@@ -1,12 +1,10 @@
 package com.example.loginscreen
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
@@ -15,6 +13,7 @@ class ForgotPasswordActivity : AppCompatActivity(), View.OnClickListener {
     // text to enter email and button to reset Password
     private lateinit var email: EditText
     private lateinit var passwordButton: Button
+    private lateinit var banner: TextView
 
     // Progressbar and access data from firebase
     private lateinit var progressBar: ProgressBar
@@ -28,15 +27,28 @@ class ForgotPasswordActivity : AppCompatActivity(), View.OnClickListener {
         email = findViewById(R.id.email)
         passwordButton = findViewById(R.id.resetPassword)
         progressBar = findViewById(R.id.progressBar)
+        banner = findViewById(R.id.banner)
         auth = FirebaseAuth.getInstance()
 
         // Listen for when the button is clicked
         passwordButton.setOnClickListener(this)
+        banner.setOnClickListener(this)
     }
 
     // Call resetPassword
     override fun onClick(view: View) {
-        resetPassword()
+        when(view.id) {
+            R.id.forgotPassword -> resetPassword()
+            R.id.banner -> launchBannerActivity()
+        }
+    }
+
+    /*
+    Used to take us back to the main activity screen after clicking on the title Planet.com
+     */
+    private fun launchBannerActivity() {
+        val bannerIntent = Intent(this, MainActivity::class.java)
+        startActivity(bannerIntent)
     }
 
     /*
@@ -81,4 +93,5 @@ class ForgotPasswordActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
     }
+
 }

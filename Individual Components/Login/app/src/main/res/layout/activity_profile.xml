@@ -18,16 +18,44 @@
         />
 
     <Button
+        android:id="@+id/saved"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Saves"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.581" />
+
+    <Button
+        android:id="@+id/explore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Explore"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.746" />
+
+    <Button
         android:id="@+id/signOut"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Logout"
+        android:textSize="10sp"
         android:textStyle="bold"
-        android:textSize="30sp"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="0.934"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.976"
         />
 
     <TextView
@@ -51,6 +79,7 @@
         android:textSize="20sp"
         android:layout_marginLeft="30dp"
         />
+
 
     <TextView
         android:id="@+id/firstNameTitle"
@@ -92,6 +121,28 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/lastNameTitle"
         app:layout_constraintLeft_toLeftOf="@+id/lastNameTitle"
+        android:textSize="20sp"
+        android:layout_marginLeft="30dp"
+        />
+
+    <TextView
+        android:id="@+id/numberOfSavesTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Number of Saves:"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/lastNameTitle"
+        app:layout_constraintLeft_toLeftOf="@+id/welcome"
+        android:layout_marginTop="30dp"
+        />
+
+    <TextView
+        android:id="@+id/numberOfSaves"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/numberOfSavesTitle"
+        app:layout_constraintLeft_toLeftOf="@+id/numberOfSavesTitle"
         android:textSize="20sp"
         android:layout_marginLeft="30dp"
         />

@@ -16,6 +16,8 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
 
     // Variables for buttons, Firebase, and Database
     private lateinit var logout: Button
+    private lateinit var saves: Button
+    private lateinit var explore: Button
     private lateinit var auth: FirebaseAuth
     private lateinit var user: FirebaseUser
     private lateinit var reference: DatabaseReference
@@ -28,8 +30,12 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
 
         // Initialize variables
         logout = findViewById(R.id.signOut)
+        saves = findViewById(R.id.saved)
+        explore = findViewById(R.id.saved)
         auth = FirebaseAuth.getInstance()
         logout.setOnClickListener(this)
+        saves.setOnClickListener(this)
+        explore.setOnClickListener(this)
         user = FirebaseAuth.getInstance().currentUser!! // Null check
         reference = FirebaseDatabase.getInstance().getReference("Users")
         userID = user.uid
@@ -69,10 +75,29 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(view: View) {
-        // Log the current user out
-        auth.signOut()
-        launchLogoutActivity()
+        when (view.id) {
+            R.id.signOut -> {
+                // Log the current user out
+                auth.signOut()
+                launchLogoutActivity()
+            }
+            R.id.saved -> {
+                launchSavedActivity()
+            }
+            R.id.explore -> {
+                launchExploreActivity()
+            }
+        }
+    }
 
+    private fun launchExploreActivity() {
+        val exploreIntent = Intent(this,ExploreActivity::class.java)
+        startActivity(exploreIntent)
+    }
+
+    private fun launchSavedActivity() {
+        val saveIntent = Intent(this,SaveActivity::class.java)
+        startActivity(saveIntent)
     }
 
     /*
