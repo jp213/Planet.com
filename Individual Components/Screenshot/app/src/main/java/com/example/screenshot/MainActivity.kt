@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -21,12 +22,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     // Reference to Firebase storage
     private var storageRef = storage.reference
 
+    // Screenshot
+    private lateinit var bitmap : Bitmap
+
     // Button pressed to take screenshot
     private lateinit var button : Button
 
     private lateinit var builder : AlertDialog.Builder
 
-    private var name : String? = null
+    private lateinit var name : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +47,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val bitmap = Bitmap.createBitmap(v.width, v.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         v.draw(canvas)
-        saveScreenshot(bitmap)
+        this.bitmap = bitmap
+        getFilename()
     }
 
     private fun getFilename() {
@@ -54,7 +59,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         builder.setView(dialogLayout)
 
         builder.setPositiveButton("Ok") { dialog, i ->
+            dialog.dismiss()
             name = userInput.text.toString()
+            if (name != "") {
+                saveScreenshot(bitmap)
+            } else {
+                Toast.makeText(this, "Invalid name", Toast.LENGTH_SHORT).show()
+                getFilename()
+            }
         }
 
         builder.setNegativeButton("Cancel") { dialog, i ->
@@ -65,19 +77,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun saveScreenshot(bitmap : Bitmap) {
-        getFilename()
-        println(name)
-        if (name != null) {
-            var imagesRef = storageRef.child("images/" + name)
-            val baos = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-            val data = baos.toByteArray()
-            var uploadTask = imagesRef.putBytes(data)
-            uploadTask.addOnFailureListener() {
-                println("Upload failed")
-            }.addOnSuccessListener {
-                println("Upload successful")
-            }
+        var imagesRef = storageRef.child("images/" + name)
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+        var uploadTask = imagesRef.putBytes(data)
+        uploadTask.addOnFailureListener() {
+            println("Upload failed")
+        }.addOnSuccessListener {
+            println("Upload successful")
         }
     }
 
