@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">WelcomeScreen</string>
-
-    <string name="welcome_screen">Welcome to Planet.com!</string>
+    <string name="we_pride_ourselves_on_showing_updates_in_real_time">We pride ourselves on showing updates in real time.</string>
+    <string name="welcome_to_planet_com">Welcome to Planet.com!</string>
+    <string name="get_started">Get Started</string>
+    <string name="description">We pride ourselves on showing location updates in real time. Tap get started to log in and/or register!</string>
 </resources>
