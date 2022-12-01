@@ -5,11 +5,15 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
@@ -26,7 +30,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var bitmap : Bitmap
 
     // Button pressed to take screenshot
-    private lateinit var button : Button
+    private lateinit var button : ImageButton
+
+    private lateinit var drawerLayout : DrawerLayout
+
+    private lateinit var actionBarDrawerToggle : ActionBarDrawerToggle
 
     private lateinit var builder : AlertDialog.Builder
 
@@ -38,6 +46,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         builder = AlertDialog.Builder(this)
         button = findViewById(R.id.screenshot)
+        drawerLayout = findViewById(R.id.my_drawer_layout)
+        actionBarDrawerToggle = ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close)
+
+        drawerLayout.addDrawerListener(actionBarDrawerToggle)
+        actionBarDrawerToggle.syncState()
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         button.setOnClickListener(this)
     }
@@ -93,5 +108,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         when (view.id) {
             R.id.screenshot -> getScreenshot()
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+            true
+        } else super.onOptionsItemSelected(item)
     }
 }
