@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/nav_account"
-        android:title="My Account" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/nav_settings"
-        android:title="Settings" />
+        android:id="@+id/nav_screenshots"
+        android:title="My Screenshots" />
+
+    <item
+        android:id="@+id/nav_locations"
+        android:title="My Locations" />
 
     <item
         android:id="@+id/nav_logout"

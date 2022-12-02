@@ -1,24 +1,26 @@
 package com.example.screenshot
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+class MainActivity : AppCompatActivity(), View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
     // Instance of Firebase storage
     private var storage = Firebase.storage
@@ -34,6 +36,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var drawerLayout : DrawerLayout
 
+    private lateinit var navigationView : NavigationView
+
     private lateinit var actionBarDrawerToggle : ActionBarDrawerToggle
 
     private lateinit var builder : AlertDialog.Builder
@@ -47,8 +51,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         builder = AlertDialog.Builder(this)
         button = findViewById(R.id.screenshot)
         drawerLayout = findViewById(R.id.my_drawer_layout)
+        navigationView = findViewById(R.id.nav_view)
         actionBarDrawerToggle = ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close)
 
+        navigationView.setNavigationItemSelectedListener(this)
         drawerLayout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
 
@@ -115,4 +121,24 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             true
         } else super.onOptionsItemSelected(item)
     }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+
+        if (id == R.id.nav_screenshots) {
+            val i = Intent(this, ScreenshotGallery::class.java)
+            startActivity(i)
+        } else if (id == R.id.nav_locations) {
+            val i = Intent(this, LocationGallery::class.java)
+            startActivity(i)
+        } else if (id == R.id.nav_logout) {
+            finish()
+        }
+        var drawer = findViewById<DrawerLayout>(R.id.my_drawer_layout)
+        drawer.closeDrawer(GravityCompat.START)
+        return true
+    }
+
+
+
 }
