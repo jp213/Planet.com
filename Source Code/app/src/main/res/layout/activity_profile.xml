@@ -125,27 +125,7 @@
         android:layout_marginLeft="30dp"
         />
 
-    <TextView
-        android:id="@+id/numberOfSavesTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Number of Saves:"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/lastNameTitle"
-        app:layout_constraintLeft_toLeftOf="@+id/welcome"
-        android:layout_marginTop="30dp"
-        />
 
-    <TextView
-        android:id="@+id/numberOfSaves"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/numberOfSavesTitle"
-        app:layout_constraintLeft_toLeftOf="@+id/numberOfSavesTitle"
-        android:textSize="20sp"
-        android:layout_marginLeft="30dp"
-        />
 
 
 

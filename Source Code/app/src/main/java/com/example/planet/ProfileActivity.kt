@@ -83,14 +83,14 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                 launchSavedActivity()
             }
             R.id.explore -> {
-                launchExploreActivity()
+                launchScreenshotActivity()
             }
         }
     }
 
-    private fun launchExploreActivity() {
-        val exploreIntent = Intent(this,ExploreActivity::class.java)
-        startActivity(exploreIntent)
+    private fun launchScreenshotActivity() {
+        val screenshotIntent = Intent(this,ScreenshotActivity::class.java)
+        startActivity(screenshotIntent)
     }
 
     private fun launchSavedActivity() {

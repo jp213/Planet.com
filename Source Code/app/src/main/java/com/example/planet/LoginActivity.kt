@@ -1,15 +1,15 @@
 package com.example.planet
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
-    //Used to switch activities
+
     private lateinit var register: TextView
     private lateinit var forgotPassword: TextView
 
@@ -19,25 +19,25 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     //Connect with firebase, login and show a loading circle when switching activities
     private lateinit var auth: FirebaseAuth
-    private lateinit var button: Button
+    private lateinit var loginButton: Button
     private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Initialize variables from main.xml and get an instance of firebase
+
         auth = FirebaseAuth.getInstance()
         email = findViewById(R.id.email)
         password = findViewById(R.id.password)
         progressBar = findViewById(R.id.progressBar)
-        button = findViewById(R.id.signIn)
+        loginButton = findViewById(R.id.signIn)
         register = findViewById(R.id.register)
         forgotPassword = findViewById(R.id.forgotPassword)
 
         // Change activity and screen when thse are clicked
         forgotPassword.setOnClickListener(this)
-        button.setOnClickListener(this)
+        loginButton.setOnClickListener(this)
         register.setOnClickListener(this)
     }
 
@@ -93,7 +93,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     // Check that the email was verified via a link sent to email
                     if (user.isEmailVerified) {
                         // Change screens and remove progress bar
-                        launchProfileActivity()
+                        launchScreenshotActivity()
                         progressBar.visibility = View.GONE
                     } else {
                         // Send email verification and display a message
@@ -119,13 +119,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         startActivity(registerUserIntent)
     }
 
-    /*
-    This is used to create an intent which will change from the home screen to the profile
-    screen upon successful login
-     */
-    private fun launchProfileActivity() {
-        val profileIntent = Intent(this, ProfileActivity::class.java)
-        startActivity(profileIntent)
+
+    private fun launchScreenshotActivity() {
+        val i = Intent(this, ScreenshotActivity::class.java)
+        startActivity(i)
     }
 
     /*
