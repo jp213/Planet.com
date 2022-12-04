@@ -14,6 +14,7 @@ import android.widget.BaseAdapter
 import android.widget.GridView
 import android.widget.ImageView
 import android.widget.TextView
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
@@ -24,6 +25,8 @@ class ScreenshotGallery : AppCompatActivity() {
 
     // Instance of Firebase storage
     private var storage = Firebase.storage
+
+    private var auth = Firebase.auth
 
     // Reference to Firebase storage
     private var storageRef = storage.reference
@@ -58,13 +61,15 @@ class ScreenshotGallery : AppCompatActivity() {
 
     private fun retrieveFilenames() {
         var counter = 0
-        var imageRef = storageRef.child("images")
+        var currUser = auth.currentUser?.uid
+        var imageRef = storageRef.child("user/" + currUser.toString())
         imageRef.listAll().addOnSuccessListener { item ->
             for (file in item.items) {
                 file.downloadUrl.addOnSuccessListener { uri ->
                     val url = uri.toString()
+                    println(url)
                     val regex = "%2F(\\w+)?".toRegex()
-                    val filename = regex.find(url, 0)?.value?.substring(3)
+                    val filename = regex.findAll(url, 0).elementAt(1)?.value?.substring(3)
 
                     if (filename != null) {
                         names.add(filename)
@@ -82,7 +87,8 @@ class ScreenshotGallery : AppCompatActivity() {
 
     private fun retrieveImages() {
         var counter = 0
-        var imageRef = storageRef.child("images")
+        var currUser = auth.currentUser?.uid
+        var imageRef = storageRef.child("user/" + currUser.toString())
         imageRef.listAll().addOnSuccessListener { item ->
             for (file in item.items) {
                 file.getBytes(1024 * 1024).addOnSuccessListener { bytes ->
