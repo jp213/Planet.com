@@ -5,12 +5,11 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
+import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -19,124 +18,145 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
+import com.google.firebase.auth.FirebaseAuth
 
-class MainActivity : AppCompatActivity(), View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
-    // Instance of Firebase storage
-    private var storage = Firebase.storage
+class MainActivity : AppCompatActivity(), View.OnClickListener {
 
-    // Reference to Firebase storage
-    private var storageRef = storage.reference
+    private lateinit var register: TextView
+    private lateinit var forgotPassword: TextView
 
-    // Screenshot
-    private lateinit var bitmap : Bitmap
+    //Login with email and password
+    private lateinit var email: EditText
+    private lateinit var password: EditText
 
-    // Button pressed to take screenshot
-    private lateinit var button : ImageButton
-
-    private lateinit var drawerLayout : DrawerLayout
-
-    private lateinit var navigationView : NavigationView
-
-    private lateinit var actionBarDrawerToggle : ActionBarDrawerToggle
-
-    private lateinit var builder : AlertDialog.Builder
-
-    private lateinit var name : String
+    //Connect with firebase, login and show a loading circle when switching activities
+    private lateinit var auth: FirebaseAuth
+    private lateinit var loginButton: Button
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        builder = AlertDialog.Builder(this)
-        button = findViewById(R.id.screenshot)
-        drawerLayout = findViewById(R.id.my_drawer_layout)
-        navigationView = findViewById(R.id.nav_view)
-        actionBarDrawerToggle = ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close)
 
-        navigationView.setNavigationItemSelectedListener(this)
-        drawerLayout.addDrawerListener(actionBarDrawerToggle)
-        actionBarDrawerToggle.syncState()
+        auth = FirebaseAuth.getInstance()
+        email = findViewById(R.id.email)
+        password = findViewById(R.id.password)
+        progressBar = findViewById(R.id.progressBar)
+        loginButton = findViewById(R.id.signIn)
+        register = findViewById(R.id.register)
+        forgotPassword = findViewById(R.id.forgotPassword)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        button.setOnClickListener(this)
+        // Change activity and screen when thse are clicked
+        forgotPassword.setOnClickListener(this)
+        loginButton.setOnClickListener(this)
+        register.setOnClickListener(this)
     }
 
-    private fun getScreenshot() {
-        val v: View = window.decorView.rootView
-        val bitmap = Bitmap.createBitmap(v.width, v.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        v.draw(canvas)
-        this.bitmap = bitmap
-        getFilename()
-    }
+    /*
+    Allow to the user too login and access data which is stored in our app. The user must input the
+    correct email and password at the time of registration or they will be instructed to check
+    their credentials.
+     */
+    private fun userLogin() {
+        // Initialize email and password to strings with nothing extra leading/trailing
+        val emailString = email.text.toString().trim()
+        val passwordString = password.text.toString().trim()
 
-    private fun getFilename() {
-        builder.setTitle("Name Screenshot")
-        val inflator = LayoutInflater.from(this)
-        val dialogLayout = inflator.inflate(R.layout.popup, null)
-        val userInput = dialogLayout.findViewById<EditText>(R.id.editText)
-        builder.setView(dialogLayout)
+        // Check if the email is empty, if so direct the user back to the email prompt
+        if (emailString.isEmpty()) {
+            email.error = ("Email is Required!")
+            email.requestFocus()
+            return
+        }
 
-        builder.setPositiveButton("Ok") { dialog, i ->
-            dialog.dismiss()
-            name = userInput.text.toString()
-            if (name != "") {
-                saveScreenshot(bitmap)
+        // Check the email matches what is stored in the firebase
+        if (!Patterns.EMAIL_ADDRESS.matcher(emailString).matches()) {
+            email.error = "Please Enter a Valid Email"
+            email.requestFocus()
+            return
+        }
+
+        // Check that the password is empty
+        if (passwordString.isEmpty()) {
+            password.error = "Password is required!"
+            password.requestFocus()
+            return
+        }
+
+        // Check that the password is 8 or more characters
+        if (passwordString.length < 8) {
+            password.error = "Password Must Be at at least 8 Characters long"
+            password.requestFocus()
+            return
+        }
+
+        // Show the progress bar while information is being verified
+        progressBar.visibility = View.VISIBLE
+
+        // Verify the proper information was passed into the email and password
+        auth.signInWithEmailAndPassword(emailString, passwordString).addOnCompleteListener { task ->
+            // Task is accessing the proper account, check if its successful
+            if (task.isSuccessful) {
+                // Get the current User information
+                val user = FirebaseAuth.getInstance().currentUser
+                // Check the user is valid
+                if (user != null) {
+                    // Check that the email was verified via a link sent to email
+                    if (user.isEmailVerified) {
+                        // Change screens and remove progress bar
+                        launchScreenshotActivity()
+                        progressBar.visibility = View.GONE
+                    } else {
+                        // Send email verification and display a message
+                        user.sendEmailVerification()
+                        Toast.makeText(
+                            this, "Please check your email to verify account", Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
             } else {
-                Toast.makeText(this, "Invalid name", Toast.LENGTH_SHORT).show()
-                getFilename()
+                Toast.makeText(this, "Please check credentials", Toast.LENGTH_LONG).show()
             }
         }
 
-        builder.setNegativeButton("Cancel") { dialog, i ->
-            dialog.cancel()
-        }
-
-        builder.show()
     }
 
-    private fun saveScreenshot(bitmap : Bitmap) {
-        var imagesRef = storageRef.child("images/" + name)
-        val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-        val data = baos.toByteArray()
-        var uploadTask = imagesRef.putBytes(data)
-        uploadTask.addOnFailureListener() {
-            println("Upload failed")
-        }.addOnSuccessListener {
-            println("Upload successful")
-        }
+    /*
+    This is used to create an intent which will change from the home screen to the registration
+    screen so the user can register in the app.
+     */
+    private fun launchRegisterActivity() {
+        val registerUserIntent = Intent(this, RegisterUser::class.java)
+        startActivity(registerUserIntent)
     }
 
+
+    private fun launchScreenshotActivity() {
+        val i = Intent(this, ScreenshotActivity::class.java)
+        startActivity(i)
+    }
+
+    /*
+    This is used to create an intent which will change from the home screen to the forget password
+    screen after clicking on forget password
+     */
+    private fun launchForgotPasswordActivity() {
+        val forgotPasswordIntent = Intent(this, ForgotPasswordActivity::class.java)
+        startActivity(forgotPasswordIntent)
+    }
+
+    /*
+    Used to determine which screen is needed to transition to depending on how the view changes based
+    on the respective clicks.
+     */
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.screenshot -> getScreenshot()
+            R.id.register -> launchRegisterActivity()
+            R.id.signIn -> userLogin()
+            R.id.forgotPassword -> launchForgotPasswordActivity()
         }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            true
-        } else super.onOptionsItemSelected(item)
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-
-        if (id == R.id.nav_screenshots) {
-            val i = Intent(this, ScreenshotGallery::class.java)
-            startActivity(i)
-        } else if (id == R.id.nav_locations) {
-            val i = Intent(this, LocationGallery::class.java)
-            startActivity(i)
-        } else if (id == R.id.nav_logout) {
-            finish()
-        }
-        var drawer = findViewById<DrawerLayout>(R.id.my_drawer_layout)
-        drawer.closeDrawer(GravityCompat.START)
-        return true
     }
 
 
