@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Planet</string>
+    <string name="we_pride_ourselves_on_showing_updates_in_real_time">We pride ourselves on showing updates in real time.</string>
+    <string name="welcome_to_planet_com">Welcome to Planet.com!</string>
+    <string name="get_started">Get Started</string>
+    <string name="description">We pride ourselves on showing location updates in real time. Tap GET STARTED to log in and/or register!</string>
+    <string name="updated_in_real_time">Updated in real time</string>
+    <string name="planet_com">Planet.com</string>
+    <string name="login">Login</string>
+    <string name="forgotpassword">ForgotPassword?</string>
+    <string name="email_address">Email Address</string>
+    <string name="password">Password</string>
+    <string name="register">Register</string>
+    <string name="textview">Welcome!</string>
 </resources>
