@@ -12,4 +12,15 @@
     <string name="password">Password</string>
     <string name="register">Register</string>
     <string name="textview">Welcome!</string>
+    <string name="name">Name</string>
+    <string name="enter_name_here">Enter name here</string>
+    <string name="screenshot">Screenshot</string>
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
+    <string name="title_activity_screenshot_gallery">ScreenshotGallery</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
 </resources>
