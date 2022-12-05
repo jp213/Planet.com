@@ -18,6 +18,7 @@ import android.widget.TextView
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
@@ -28,6 +29,8 @@ class SaveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     // Instance of Firebase storage
     private var storage = Firebase.storage
+
+    private var auth = Firebase.auth
 
     // Reference to Firebase storage
     private var storageRef = storage.reference
@@ -62,13 +65,15 @@ class SaveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun retrieveFilenames() {
         var counter = 0
-        val imageRef = storageRef.child("images")
+        var currUser = auth.currentUser?.uid
+        var imageRef = storageRef.child("user/" + currUser.toString())
         imageRef.listAll().addOnSuccessListener { item ->
             for (file in item.items) {
                 file.downloadUrl.addOnSuccessListener { uri ->
                     val url = uri.toString()
+                    println(url)
                     val regex = "%2F(\\w+)?".toRegex()
-                    val filename = regex.find(url, 0)?.value?.substring(3)
+                    val filename = regex.findAll(url, 0).elementAt(1)?.value?.substring(3)
 
                     if (filename != null) {
                         names.add(filename)
@@ -86,7 +91,8 @@ class SaveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun retrieveImages() {
         var counter = 0
-        val imageRef = storageRef.child("images")
+        var currUser = auth.currentUser?.uid
+        var imageRef = storageRef.child("user/" + currUser.toString())
         imageRef.listAll().addOnSuccessListener { item ->
             for (file in item.items) {
                 file.getBytes(1024 * 1024).addOnSuccessListener { bytes ->
@@ -101,8 +107,6 @@ class SaveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
     }
-
-
 
     class CustomAdapter : BaseAdapter {
         private lateinit var imageNames: ArrayList<String>
