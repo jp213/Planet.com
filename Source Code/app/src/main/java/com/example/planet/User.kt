@@ -9,16 +9,18 @@ class User {
     var firstName: String
     var lastName: String
     var email: String
+    var screenshots : List<String>
 
 
 
     // Empty Constructor
-    constructor() : this("", "", "")
+    constructor() : this("", "", "", ArrayList<String>())
 
     // Constructor when given name and email.
-    constructor(firstName: String, lastName: String, email: String) {
+    constructor(firstName: String, lastName: String, email: String, screenshots : List<String>) {
         this.firstName = firstName
         this.lastName = lastName
         this.email = email
+        this.screenshots = screenshots
     }
 }

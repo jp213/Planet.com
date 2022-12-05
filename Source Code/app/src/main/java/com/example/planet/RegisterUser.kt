@@ -121,7 +121,7 @@ class RegisterUser : AppCompatActivity() , View.OnClickListener {
                 if (task.isSuccessful) {
 
                     //Use user constructor to make new user
-                    val user = User(firstNameString, lastNameString, emailString)
+                    val user = User(firstNameString, lastNameString, emailString, ArrayList<String>())
 
                     // Set a user ID by getting the instance of the Users tab in the firebase
                     // and storing the current(new) user as a child
