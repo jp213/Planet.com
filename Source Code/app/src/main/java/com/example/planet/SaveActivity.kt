@@ -171,7 +171,6 @@ class SaveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.nav_profile -> launchProfileActivity()
             R.id.nav_screenshots -> launchSaveActivity()
-            R.id.nav_locations -> launchLocationGallery()
             R.id.nav_logout -> logout()
         }
 
@@ -182,11 +181,6 @@ class SaveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun launchSaveActivity() {
         val i = Intent(this, SaveActivity::class.java)
-        startActivity(i)
-    }
-
-    private fun launchLocationGallery() {
-        val i = Intent(this, LocationGallery::class.java)
         startActivity(i)
     }
 

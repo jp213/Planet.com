@@ -167,7 +167,6 @@ class ScreenshotActivity : AppCompatActivity(), View.OnClickListener, Navigation
         when (item.itemId) {
             R.id.nav_profile -> launchProfileActivity()
             R.id.nav_screenshots -> launchScreenshotGallery()
-            R.id.nav_locations -> launchLocationGallery()
             R.id.nav_logout -> logout()
         }
 
@@ -178,11 +177,6 @@ class ScreenshotActivity : AppCompatActivity(), View.OnClickListener, Navigation
 
     private fun launchScreenshotGallery() {
         val i = Intent(this, SaveActivity::class.java)
-        startActivity(i)
-    }
-
-    private fun launchLocationGallery() {
-        val i = Intent(this, LocationGallery::class.java)
         startActivity(i)
     }
 
