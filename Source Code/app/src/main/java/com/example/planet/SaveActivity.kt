@@ -32,6 +32,8 @@ class SaveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private var auth = Firebase.auth
 
+    var currUser = auth.currentUser?.uid
+
     // Reference to Firebase storage
     private var storageRef = storage.reference
 
@@ -63,45 +65,20 @@ class SaveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun retrieveFilenames() {
-        var counter = 0
-        var currUser = auth.currentUser?.uid
-        var imageRef = storageRef.child("user/" + currUser.toString())
-        imageRef.listAll().addOnSuccessListener { item ->
-            for (file in item.items) {
-                file.downloadUrl.addOnSuccessListener { uri ->
-                    val url = uri.toString()
-                    println(url)
-                    val regex = "%2F(\\w+)?".toRegex()
-                    val filename = regex.findAll(url, 0).elementAt(1)?.value?.substring(3)
-
-                    if (filename != null) {
-                        names.add(filename)
-                    }
-
-                    counter++
-
-                    if (counter == item.items.size) {
-                        createGallery()
-                    }
-                }
-            }
-        }
-    }
 
     private fun retrieveImages() {
         var counter = 0
-        var currUser = auth.currentUser?.uid
         var imageRef = storageRef.child("user/" + currUser.toString())
         imageRef.listAll().addOnSuccessListener { item ->
             for (file in item.items) {
                 file.getBytes(1024 * 1024).addOnSuccessListener { bytes ->
                     val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                     images.add(bitmap)
+                    names.add(file.name)
                     counter++
 
                     if (counter == item.items.size) {
-                        retrieveFilenames()
+                        createGallery()
                     }
                 }
             }

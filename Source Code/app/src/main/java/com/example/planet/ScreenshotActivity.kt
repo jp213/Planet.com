@@ -17,6 +17,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
@@ -28,6 +29,9 @@ class ScreenshotActivity : AppCompatActivity(), View.OnClickListener, Navigation
     private var storageRef = storage.reference
 
     private var auth = Firebase.auth
+
+    var currUser = auth.currentUser?.uid
+
 
     // Screenshot
     private lateinit var bitmap : Bitmap
@@ -62,6 +66,7 @@ class ScreenshotActivity : AppCompatActivity(), View.OnClickListener, Navigation
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         screenshotButton.setOnClickListener(this)
+
 
     }
 
@@ -100,16 +105,15 @@ class ScreenshotActivity : AppCompatActivity(), View.OnClickListener, Navigation
     }
 
     private fun saveScreenshot(bitmap : Bitmap) {
-        var currUser = auth.currentUser?.uid
         var imagesRef = storageRef.child("user/" + currUser.toString() + "/" + name)
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val data = baos.toByteArray()
         val uploadTask = imagesRef.putBytes(data)
         uploadTask.addOnFailureListener() {
-            Toast.makeText(this, "Screenshot failed.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Screenshot failed", Toast.LENGTH_SHORT).show()
         }.addOnSuccessListener {
-            Toast.makeText(this, "Screenshot saved.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Screenshot saved!", Toast.LENGTH_SHORT).show()
         }
     }
 
