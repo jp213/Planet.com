@@ -103,6 +103,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     screen. An Intent is created to take us back to the MainActivity screen
      */
     private fun launchLogoutActivity() {
+        finishAffinity()
         val logOutIntent = Intent(this, MainActivity::class.java)
         startActivity(logOutIntent)
     }
