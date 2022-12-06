@@ -54,8 +54,7 @@
         android:contentDescription="Launch Search" />
     <ImageButton
         android:id="@+id/screenshot"
-        android:translationY="40dp"
-        android:translationX="350dp"
+        android:translationX="300dp"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:src="@drawable/ic_action_screenshot"
