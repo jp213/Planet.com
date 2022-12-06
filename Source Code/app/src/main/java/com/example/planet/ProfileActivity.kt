@@ -83,9 +83,14 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                 launchSavedActivity()
             }
             R.id.explore -> {
-                launchScreenshotActivity()
+                launchMapsActivity()
             }
         }
+    }
+
+    private fun launchMapsActivity() {
+        val i = Intent(this, MapsActivity::class.java)
+        startActivity(i)
     }
 
     private fun launchScreenshotActivity() {
