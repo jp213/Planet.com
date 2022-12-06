@@ -79,14 +79,15 @@
             android:id="@+id/mapFragment"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="671dp"
-            android:layout_marginTop="30dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="0dp"
             map:mapType="satellite"
             />
 
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+<<<<<<< HEAD
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
@@ -94,3 +95,5 @@
         android:layout_gravity="start"
         app:menu="@menu/side_bar" />
 </androidx.drawerlayout.widget.DrawerLayout>
+=======
+>>>>>>> 7ce795f5f8d403fb06085369163b3c3f9f5eb46c
