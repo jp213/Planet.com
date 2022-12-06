@@ -46,7 +46,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-database-ktx:20.1.0'
     implementation 'com.google.firebase:firebase-storage-ktx:20.1.0'
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
+<<<<<<< HEAD
     implementation 'com.google.android.gms:play-services-location:21.0.1'
+=======
+>>>>>>> a50359d19dba12195e7115c694ea11b76f79f861
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
