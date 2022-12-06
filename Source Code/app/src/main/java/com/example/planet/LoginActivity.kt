@@ -93,7 +93,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     // Check that the email was verified via a link sent to email
                     if (user.isEmailVerified) {
                         // Change screens and remove progress bar
-                        launchScreenshotActivity()
+                        launchMapsActivity()
+                        //launchScreenshotActivity()
                         progressBar.visibility = View.GONE
                     } else {
                         // Send email verification and display a message
@@ -119,6 +120,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         startActivity(registerUserIntent)
     }
 
+    private fun launchMapsActivity() {
+        val i = Intent(this, MapsActivity::class.java)
+        startActivity(i)
+    }
 
     private fun launchScreenshotActivity() {
         val i = Intent(this, ScreenshotActivity::class.java)
