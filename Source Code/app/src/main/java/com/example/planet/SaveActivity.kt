@@ -10,15 +10,15 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.BaseAdapter
-import android.widget.GridView
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
@@ -32,22 +32,54 @@ class SaveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private var auth = Firebase.auth
 
-    var currUser = auth.currentUser?.uid
+    private var database = Firebase.database
+
+    private var databaseRef = database.getReference("Users")
+
+    var currUser = auth.currentUser!!.uid
 
     // Reference to Firebase storage
     private var storageRef = storage.reference
 
-    private var names = ArrayList<String>()
-    private var images = ArrayList<Bitmap>()
+    private var images = ArrayList<Bitmap?>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_save)
 
-        retrieveImages()
+        retrieveFilenames(object : MyCallback {
+            override fun onCallback(list: ArrayList<String>) {
+                retrieveImages(list)
+            }
+        })
     }
 
-    private fun createGallery() {
+    private fun retrieveFilenames(callback : MyCallback) {
+        databaseRef.child(currUser).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                // Use empty constructor to get name and email from Firebase
+                val userProfile = snapshot.getValue(User::class.java)
+                if (userProfile != null) {
+                    var names = userProfile.screenshots as ArrayList<String>
+
+                    for (i in 0..names.size-1) {
+                        images.add(null)
+                    }
+
+                    callback.onCallback(names)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // If the data could not be pulled
+                Toast.makeText(this@SaveActivity, "Uh oh, an error occurred", Toast.LENGTH_LONG)
+                    .show()
+            }
+        })
+    }
+
+    private fun createGallery(names : ArrayList<String>) {
         gridView = findViewById(R.id.my_grid_view)
         val customAdaptor = CustomAdapter(names, images, this)
         gridView.adapter = customAdaptor
@@ -57,7 +89,9 @@ class SaveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val image = images[i]
 
             val bStream = ByteArrayOutputStream()
-            image.compress(Bitmap.CompressFormat.JPEG, 100, bStream)
+            if (image != null) {
+                image.compress(Bitmap.CompressFormat.JPEG, 100, bStream)
+            }
             val arr = bStream.toByteArray()
 
             val i = Intent(this, DisplayImage::class.java)
@@ -66,19 +100,22 @@ class SaveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
-    private fun retrieveImages() {
+    private fun retrieveImages(filenames : ArrayList<String>) {
         var counter = 0
-        var imageRef = storageRef.child("user/" + currUser.toString())
+        var imageRef = storageRef.child("user/$currUser")
         imageRef.listAll().addOnSuccessListener { item ->
             for (file in item.items) {
                 file.getBytes(1024 * 1024).addOnSuccessListener { bytes ->
                     val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                    images.add(bitmap)
-                    names.add(file.name)
+                    val filename = file.name
+                    val insertIndex = filenames.indexOf(filename)
+                    println(insertIndex)
+                    images.set(insertIndex, bitmap)
+                    println(images)
                     counter++
 
                     if (counter == item.items.size) {
-                        createGallery()
+                        createGallery(filenames)
                     }
                 }
             }
@@ -87,11 +124,11 @@ class SaveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     class CustomAdapter : BaseAdapter {
         private lateinit var imageNames: ArrayList<String>
-        private lateinit var images: ArrayList<Bitmap>
+        private lateinit var images: ArrayList<Bitmap?>
         private lateinit var context: Context
         private lateinit var layoutInflater: LayoutInflater
 
-        constructor(imageNames: ArrayList<String>, images: ArrayList<Bitmap>, context: Context) : super() {
+        constructor(imageNames: ArrayList<String>, images: ArrayList<Bitmap?>, context: Context) : super() {
             if (imageNames != null) {
                 this.imageNames = imageNames
             }
@@ -126,7 +163,6 @@ class SaveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             name?.text = imageNames[p0]
             photo?.setImageBitmap(images[p0])
-
             return view
         }
     }
@@ -135,7 +171,6 @@ class SaveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.nav_profile -> launchProfileActivity()
             R.id.nav_screenshots -> launchSaveActivity()
-            R.id.nav_locations -> launchLocationGallery()
             R.id.nav_logout -> logout()
         }
 
@@ -146,11 +181,6 @@ class SaveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun launchSaveActivity() {
         val i = Intent(this, SaveActivity::class.java)
-        startActivity(i)
-    }
-
-    private fun launchLocationGallery() {
-        val i = Intent(this, LocationGallery::class.java)
         startActivity(i)
     }
 
@@ -167,5 +197,9 @@ class SaveActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         finishAffinity()
         val i = Intent(this, MainActivity::class.java)
         startActivity(i)
+    }
+
+    interface MyCallback {
+        fun onCallback(list : ArrayList<String>);
     }
 }

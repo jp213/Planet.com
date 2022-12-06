@@ -17,6 +17,9 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -30,8 +33,11 @@ class ScreenshotActivity : AppCompatActivity(), View.OnClickListener, Navigation
 
     private var auth = Firebase.auth
 
-    var currUser = auth.currentUser?.uid
+    private var currUser = auth.currentUser!!.uid
 
+    private var database = Firebase.database
+
+    private var databaseRef = database.getReference("Users")
 
     // Screenshot
     private lateinit var bitmap : Bitmap
@@ -48,6 +54,8 @@ class ScreenshotActivity : AppCompatActivity(), View.OnClickListener, Navigation
     private lateinit var builder : AlertDialog.Builder
 
     private lateinit var name : String
+
+    private lateinit var names : ArrayList<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +75,23 @@ class ScreenshotActivity : AppCompatActivity(), View.OnClickListener, Navigation
 
         screenshotButton.setOnClickListener(this)
 
+        databaseRef.child(currUser).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                // Use empty constructor to get name and email from Firebase
+                val userProfile = snapshot.getValue(User::class.java)
+                if (userProfile != null) {
+                    names = userProfile.screenshots as ArrayList<String>
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // If the data could not be pulled
+                Toast.makeText(this@ScreenshotActivity, "Uh oh, an error occurred", Toast.LENGTH_LONG)
+                    .show()
+            }
+        })
+
 
     }
 
@@ -81,7 +106,14 @@ class ScreenshotActivity : AppCompatActivity(), View.OnClickListener, Navigation
             dialog.dismiss()
             name = userInput.text.toString()
             if (name != "") {
-                saveScreenshot(bitmap)
+                names.add(name)
+
+                database.getReference("Users/$currUser").updateChildren(hashMapOf("screenshots" to names) as Map<String, Any>).addOnSuccessListener {
+                    saveScreenshot(bitmap)
+                }
+            } else if (names.contains(name)) {
+                Toast.makeText(this, "Name already exists", Toast.LENGTH_SHORT).show()
+                getFilename()
             } else {
                 Toast.makeText(this, "Invalid name", Toast.LENGTH_SHORT).show()
                 getFilename()
@@ -101,6 +133,7 @@ class ScreenshotActivity : AppCompatActivity(), View.OnClickListener, Navigation
         val canvas = Canvas(bitmap)
         v.draw(canvas)
         this.bitmap = bitmap
+
         getFilename()
     }
 
@@ -134,7 +167,6 @@ class ScreenshotActivity : AppCompatActivity(), View.OnClickListener, Navigation
         when (item.itemId) {
             R.id.nav_profile -> launchProfileActivity()
             R.id.nav_screenshots -> launchScreenshotGallery()
-            R.id.nav_locations -> launchLocationGallery()
             R.id.nav_logout -> logout()
         }
 
@@ -145,11 +177,6 @@ class ScreenshotActivity : AppCompatActivity(), View.OnClickListener, Navigation
 
     private fun launchScreenshotGallery() {
         val i = Intent(this, SaveActivity::class.java)
-        startActivity(i)
-    }
-
-    private fun launchLocationGallery() {
-        val i = Intent(this, LocationGallery::class.java)
         startActivity(i)
     }
 

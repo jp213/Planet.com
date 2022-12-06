@@ -11,10 +11,6 @@
         android:title="My Screenshots" />
 
     <item
-        android:id="@+id/nav_locations"
-        android:title="My Locations" />
-
-    <item
         android:id="@+id/nav_logout"
         android:title="Logout" />
 </menu>
